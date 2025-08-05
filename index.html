@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Feedback Form</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f1f3f5;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        form {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 1000px;
+            margin: auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .row-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: #2c3e50;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .rating-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        input[type="number"],
+        textarea {
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="time"]:focus,
+        textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+        }
+
+        textarea {
+            width: 100%;
+            resize: vertical;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn,
+        .add-btn {
+            padding: 8px 14px;
+            background: #3498db;
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover,
+        .add-btn:hover {
+            background: #217dbb;
+        }
+
+        .rm-btn {
+            margin-left: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 16px;
+            width: 30px;
+            height: 30px;
+            line-height: 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .rm-btn:hover {
+            background: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        label {
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 4px;
+        }
+
+        .toggle-btn.selected {
+            background: #2ecc71 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>PATIENT FEEDBACK FORM - OPD</h2>
+
+    <form action="submit.php" method="post" id="feedbackForm">
+        <h2>A. Patients Particulars</h2>
+        <div class="section">
+            <div class="row-label">Date:</div>
+            <div class="button-group">
+                <button type="button" class="btn" onclick="setDate('today')">Today</button>
+                <button type="button" class="btn" onclick="setDate('yesterday')">Yesterday</button>
+                <input type="date" name="date" id="dateInput" placeholder="yyyy-mm-dd" required />
+            </div>
+        </div>
+        <hr>
+        <div class="section">
+            <div class="section">
+                <div class="row-label">Personal Details:</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Selection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gender</td>
+                            <td>
+                                <label><input type="radio" name="gender" value="Male" required /> Male</label>
+                                <label><input type="radio" name="gender" value="Female" /> Female</label>
+                                <label><input type="radio" name="gender" value="Other" /> Other</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Age Group</td>
+                            <td>
+                                <label><input type="radio" name="age_group" value="<10" required /> &lt;10</label>
+                                <label><input type="radio" name="age_group" value="10-40" /> 10-40</label>
+                                <label><input type="radio" name="age_group" value="40-60" /> 40-60</label>
+                                <label><input type="radio" name="age_group" value="60-80" /> 60-80</label>
+                                <label><input type="radio" name="age_group" value=">80" /> &gt;80</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+            <div class="options-row">
+                <label>Time In: <input type="time" name="time_in" required /></label>
+                <label>Time Out: <input type="time" name="time_out" required /></label>
+            </div>
+            <hr>
+            <div class="row-label">Visited OPD Room No(s):</div>
+            <div id="roomFields">
+                <div class="options-row">
+                    <label>Room: <input type="number" name="room_no[]" required></label>
+                </div>
+            </div>
+            <button type="button" class="add-btn" onclick="addRoomField()">Add Another Room</button>
+            <hr>
+            <div class="row-label">Disease/Complaint:</div>
+            <input type="text" name="disease" required />
+
+            <div class="row-label">Visit Type:</div>
+            <div class="options-row">
+                <label><input type="radio" name="visit_type" value="First Visit" required /> First Visit</label>
+                <label><input type="radio" name="visit_type" value="Revisit" /> Revisit</label>
+            </div>
+        </div>
+        <hr>
+        <h2>B. Service Levels</h2>
+        <div class="section">
+            <div class="row-label">Service Level Ratings (1=Very Dissatisfied to 5=Very Satisfied):</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Rate (1 to 5)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Registration</td>
+                        <td>
+                            <label><input type="radio" name="rate1" value="1" required> 1</label>
+                            <label><input type="radio" name="rate1" value="2"> 2</label>
+                            <label><input type="radio" name="rate1" value="3"> 3</label>
+                            <label><input type="radio" name="rate1" value="4"> 4</label>
+                            <label><input type="radio" name="rate1" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Staff Behavior</td>
+                        <td>
+                            <label><input type="radio" name="rate2" value="1" required> 1</label>
+                            <label><input type="radio" name="rate2" value="2"> 2</label>
+                            <label><input type="radio" name="rate2" value="3"> 3</label>
+                            <label><input type="radio" name="rate2" value="4"> 4</label>
+                            <label><input type="radio" name="rate2" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Waiting Time</td>
+                        <td>
+                            <label><input type="radio" name="rate3" value="1" required> 1</label>
+                            <label><input type="radio" name="rate3" value="2"> 2</label>
+                            <label><input type="radio" name="rate3" value="3"> 3</label>
+                            <label><input type="radio" name="rate3" value="4"> 4</label>
+                            <label><input type="radio" name="rate3" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Doctor Empathy</td>
+                        <td>
+                            <label><input type="radio" name="rate4" value="1" required> 1</label>
+                            <label><input type="radio" name="rate4" value="2"> 2</label>
+                            <label><input type="radio" name="rate4" value="3"> 3</label>
+                            <label><input type="radio" name="rate4" value="4"> 4</label>
+                            <label><input type="radio" name="rate4" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Radiology / Lab</td>
+                        <td>
+                            <label><input type="radio" name="rate5" value="1" required> 1</label>
+                            <label><input type="radio" name="rate5" value="2"> 2</label>
+                            <label><input type="radio" name="rate5" value="3"> 3</label>
+                            <label><input type="radio" name="rate5" value="4"> 4</label>
+                            <label><input type="radio" name="rate5" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Medicines Explanation</td>
+                        <td>
+                            <label><input type="radio" name="rate6" value="1" required> 1</label>
+                            <label><input type="radio" name="rate6" value="2"> 2</label>
+                            <label><input type="radio" name="rate6" value="3"> 3</label>
+                            <label><input type="radio" name="rate6" value="4"> 4</label>
+                            <label><input type="radio" name="rate6" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cleanliness</td>
+                        <td>
+                            <label><input type="radio" name="rate7" value="1" required> 1</label>
+                            <label><input type="radio" name="rate7" value="2"> 2</label>
+                            <label><input type="radio" name="rate7" value="3"> 3</label>
+                            <label><input type="radio" name="rate7" value="4"> 4</label>
+                            <label><input type="radio" name="rate7" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Amenities</td>
+                        <td>
+                            <label><input type="radio" name="rate8" value="1" required> 1</label>
+                            <label><input type="radio" name="rate8" value="2"> 2</label>
+                            <label><input type="radio" name="rate8" value="3"> 3</label>
+                            <label><input type="radio" name="rate8" value="4"> 4</label>
+                            <label><input type="radio" name="rate8" value="5"> 5</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Overall Experience</td>
+                        <td>
+                            <label><input type="radio" name="rate9" value="1" required> 1</label>
+                            <label><input type="radio" name="rate9" value="2"> 2</label>
+                            <label><input type="radio" name="rate9" value="3"> 3</label>
+                            <label><input type="radio" name="rate9" value="4"> 4</label>
+                            <label><input type="radio" name="rate9" value="5"> 5</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
+            <div class="section" id="waitingReasonSection" style="display: none;">
+                <div class="row-label">Where was the waiting time more?</div>
+                <div class="options-row" id="waitingButtons">
+                    <div>
+                        <button type="button" class="btn toggle-btn" data-value="Gate Entry">Gate Entry</button>
+                        <input type="hidden" name="waiting_reason[]" value="" disabled>
+                    </div>
+                    <div>
+                        <button type="button" class="btn toggle-btn" data-value="Registration">Registration</button>
+                        <input type="hidden" name="waiting_reason[]" value="" disabled>
+                    </div>
+                    <div>
+                        <button type="button" class="btn toggle-btn" data-value="OP">OP</button>
+                        <input type="hidden" name="waiting_reason[]" value="" disabled>
+                    </div>
+                    <div>
+                        <button type="button" class="btn toggle-btn" data-value="Testing">Testing</button>
+                        <input type="hidden" name="waiting_reason[]" value="" disabled>
+                    </div>
+                    <div>
+                        <button type="button" class="btn toggle-btn" data-value="Pharmacy">Pharmacy</button>
+                        <input type="hidden" name="waiting_reason[]" value="" disabled>
+                    </div>
+                    <div>
+                        <button type="button" class="btn toggle-btn" data-value="Chemist Shop">Chemist Shop</button>
+                        <input type="hidden" name="waiting_reason[]" value="" disabled>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <h2>C. Reason of Dissatisfaction</h2>
+        <label for="reason" class="row-label">Reason(s) for Dissatisfaction:</label><br>
+        <textarea id="reason" name="reason" rows="3" cols="50"></textarea>
+        </div>
+
+        <div id="dissatisfaction-areas" style="display:none; margin-top: 15px;">
+            <p><strong>Which area caused dissatisfaction?</strong></p>
+            <div class="button-group" id="dissatisfactionButtons">
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="Gate Entry">Gate Entry</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="Registration">Registration</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="OP">OP</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="Testing">Testing</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="Pharmacy">Pharmacy</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="Chemist Shop">Chemist Shop</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+                <div>
+                    <button type="button" class="btn toggle-btn" data-value="Security">Security</button>
+                    <input type="hidden" name="dissatisfaction_area[]" value="" disabled>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="section">
+            <div class="row-label">Best things you liked about the hospital:</div>
+            <div class="options-row">
+                <input type="text" name="best1" placeholder="1. ..." />
+                <input type="text" name="best2" placeholder="2. ..." />
+                <input type="text" name="best3" placeholder="3. ..." />
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="row-label">Any suggestions for improvement?</div>
+            <textarea name="suggestions" rows="3"></textarea>
+        </div>
+
+        <div class="section">
+            <button type="submit" class="btn">Submit</button>
+        </div>
+
+    </form>
+
+    <script>
+        // Show/hide Waiting Time Reason Section
+        document.querySelectorAll('input[name="rate3"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const selectedValue = parseInt(this.value);
+                const waitingSection = document.getElementById('waitingReasonSection');
+                if (selectedValue < 3) {
+                    waitingSection.style.display = 'block';
+                } else {
+                    waitingSection.style.display = 'none';
+
+                    // Clear selected waiting reason buttons
+                    document.querySelectorAll('#waitingButtons .toggle-btn').forEach((btn) => {
+                        btn.classList.remove('selected');
+                        const input = btn.nextElementSibling;
+                        input.value = '';
+                        input.disabled = true;
+                    });
+                }
+            });
+        });
+
+        // Set today's or yesterday's date
+        function setDate(option) {
+            const input = document.getElementById("dateInput");
+            const today = new Date();
+            if (option === 'yesterday') {
+                today.setDate(today.getDate() - 1);
+            }
+            input.value = today.toISOString().slice(0, 10);
+        }
+
+        // Add new OPD room field
+        function addRoomField() {
+            const wrapper = document.createElement("div");
+            wrapper.className = "options-row";
+            wrapper.innerHTML =
+                '<label>Room: <input type="text" name="room_no[]" required></label>' +
+                '<button type="button" class="rm-btn" onclick="this.parentNode.remove()">❌</button>';
+            document.getElementById("roomFields").appendChild(wrapper);
+        }
+
+        // Toggle "Where was the waiting time more?" buttons
+        document.querySelectorAll('#waitingButtons .toggle-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const input = btn.nextElementSibling;
+                if (btn.classList.contains('selected')) {
+                    btn.classList.remove('selected');
+                    input.value = '';
+                    input.disabled = true;
+                } else {
+                    btn.classList.add('selected');
+                    input.value = btn.getAttribute('data-value');
+                    input.disabled = false;
+                }
+            });
+        });
+
+        // Toggle "Which area caused dissatisfaction?" buttons
+        document.querySelectorAll('#dissatisfactionButtons .toggle-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const input = btn.nextElementSibling;
+                if (btn.classList.contains('selected')) {
+                    btn.classList.remove('selected');
+                    input.value = '';
+                    input.disabled = true;
+                } else {
+                    btn.classList.add('selected');
+                    input.value = btn.getAttribute('data-value');
+                    input.disabled = false;
+                }
+            });
+        });
+
+        // Show/hide dissatisfaction area based on reason text
+        const reasonTextarea = document.getElementById("reason");
+        const dissatisfactionDiv = document.getElementById("dissatisfaction-areas");
+
+        reasonTextarea.addEventListener("input", () => {
+            const hasReason = reasonTextarea.value.trim().length > 0;
+
+            if (hasReason) {
+                dissatisfactionDiv.style.display = "block";
+            } else {
+                dissatisfactionDiv.style.display = "none";
+
+                // Clear selected dissatisfaction area buttons
+                document.querySelectorAll('#dissatisfactionButtons .toggle-btn').forEach((btn) => {
+                    btn.classList.remove('selected');
+                    const input = btn.nextElementSibling;
+                    input.value = '';
+                    input.disabled = true;
+                });
+            }
+        });
+
+        document.getElementById("feedbackForm").addEventListener("submit", function (e) {
+            e.preventDefault(); // Stop default form submission
+
+            const form = e.target;
+
+            const data = {
+                date: document.getElementById("dateInput").value,
+                gender: form.gender.value,
+                age_group: form.age_group.value,
+                time_in: form.time_in.value,
+                time_out: form.time_out.value,
+                room_no: Array.from(document.querySelectorAll('input[name="room_no[]"]')).map(input => input.value),
+                disease: form.disease.value,
+                visit_type: form.visit_type.value,
+
+                rate1: form.rate1.value,
+                rate2: form.rate2.value,
+                rate3: form.rate3.value,
+                rate4: form.rate4.value,
+                rate5: form.rate5.value,
+                rate6: form.rate6.value,
+                rate7: form.rate7.value,
+                rate8: form.rate8.value,
+                rate9: form.rate9.value,
+
+                reason: document.getElementById("reason").value,
+                waiting_reason: Array.from(document.querySelectorAll('input[name="waiting_reason[]"]:not(:disabled)')).map(input => input.value),
+                dissatisfaction_area: Array.from(document.querySelectorAll('input[name="dissatisfaction_area[]"]:not(:disabled)')).map(input => input.value),
+                best1: form.best1.value,
+                best2: form.best2.value,
+                best3: form.best3.value,
+                suggestions: form.suggestions.value
+            };
+
+            fetch("https://script.google.com/macros/s/AKfycbxpQMc2nH5A65G8Uk4iWRVPCcr28j-8dQQklN1Z-8RqJWXofOqslx0S65UbjXiGQGzd8Q/exec", {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => res.json())
+                .then(response => {
+                    if (response.success) {
+                        alert("Thank you! Your response has been recorded.");
+                        form.reset();
+
+                        // Optionally hide dynamic sections
+                        document.getElementById("waitingReasonSection").style.display = "none";
+                        document.getElementById("dissatisfaction-areas").style.display = "none";
+
+                        // Clear any selected buttons
+                        document.querySelectorAll(".toggle-btn").forEach(btn => btn.classList.remove("selected"));
+                        document.querySelectorAll('input[name="waiting_reason[]"], input[name="dissatisfaction_area[]"]').forEach(input => {
+                            input.disabled = true;
+                            input.value = "";
+                        });
+                    } else {
+                        alert("Something went wrong. Please try again.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    alert("Failed to submit. Please check your connection.");
+                });
+        });
+
+    </script>
+
+
+
+</body>
+
+</html>
