@@ -156,7 +156,9 @@
 
     <h2>PATIENT FEEDBACK FORM - OPD</h2>
 
-    <form action="submit.php" method="post" id="feedbackForm">
+    <form
+        action="https://script.google.com/macros/s/AKfycbxOwZHVv3Y1INRTtSLe7Z0gpi401TqgYJU7B9Rsy2NDrVHTOjT0476Y8aa1V1KOQVdfgw/exec"
+        method="post" id="feedbackForm">
         <h2>A. Patients Particulars</h2>
         <div class="section">
             <div class="row-label">Date:</div>
@@ -518,69 +520,24 @@
             }
         });
 
-        document.getElementById("feedbackForm").addEventListener("submit", function (e) {
-            e.preventDefault(); // Stop default form submission
 
+        document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+            e.preventDefault();
             const form = e.target;
+            const formData = new FormData(form);
 
-            const data = {
-                date: document.getElementById("dateInput").value,
-                gender: form.gender.value,
-                age_group: form.age_group.value,
-                time_in: form.time_in.value,
-                time_out: form.time_out.value,
-                room_no: Array.from(document.querySelectorAll('input[name="room_no[]"]')).map(input => input.value),
-                disease: form.disease.value,
-                visit_type: form.visit_type.value,
-
-                rate1: form.rate1.value,
-                rate2: form.rate2.value,
-                rate3: form.rate3.value,
-                rate4: form.rate4.value,
-                rate5: form.rate5.value,
-                rate6: form.rate6.value,
-                rate7: form.rate7.value,
-                rate8: form.rate8.value,
-                rate9: form.rate9.value,
-
-                reason: document.getElementById("reason").value,
-                waiting_reason: Array.from(document.querySelectorAll('input[name="waiting_reason[]"]:not(:disabled)')).map(input => input.value),
-                dissatisfaction_area: Array.from(document.querySelectorAll('input[name="dissatisfaction_area[]"]:not(:disabled)')).map(input => input.value),
-                best1: form.best1.value,
-                best2: form.best2.value,
-                best3: form.best3.value,
-                suggestions: form.suggestions.value
-            };
-
-            fetch("https://script.google.com/macros/s/AKfycbzYKKzoYmXdGUK4wYJwXGNa39MHX0jRyc0t-b_BPYDBe4bNb7S83nf__KYn1ZCw7osHBg/exec", {
+            fetch(form.action, {
                 method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then(res => res.json())
-                .then(response => {
-                    if (response.success) {
-                        alert("Thank you! Your response has been recorded.");
-                        form.reset();
-
-                        // Optionally hide dynamic sections
-                        document.getElementById("waitingReasonSection").style.display = "none";
-                        document.getElementById("dissatisfaction-areas").style.display = "none";
-
-                        // Clear any selected buttons
-                        document.querySelectorAll(".toggle-btn").forEach(btn => btn.classList.remove("selected"));
-                        document.querySelectorAll('input[name="waiting_reason[]"], input[name="dissatisfaction_area[]"]').forEach(input => {
-                            input.disabled = true;
-                            input.value = "";
-                        });
-                    } else {
-                        alert("Something went wrong. Please try again.");
-                    }
+                body: formData
+            })
+                .then(res => res.text())
+                .then(data => {
+                    alert("Submitted successfully!");
+                    form.reset();
                 })
                 .catch(err => {
-                    console.error("Error:", err);
-                    alert("Failed to submit. Please check your connection.");
+                    alert("Submission failed.");
+                    console.error(err);
                 });
         });
 
